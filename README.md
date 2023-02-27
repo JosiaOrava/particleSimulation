@@ -13,4 +13,4 @@ This project has teached me to work with
 
 ## Future features
 Next I am working on water element and after that fire and distruction.
-<br> After those I will work on optimizing this sense now it runs into problems when there are many particles because it runs every frame alot of calculations on each particle.
+<br><br> After those I will work on optimizing this sense now it runs into problems when there are many particles because it runs every frame alot of calculations on each particle.
