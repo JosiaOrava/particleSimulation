@@ -1,5 +1,5 @@
 # Particle Simulation
-![](https://github.com/JosiaOrava/particleSimulation/img/readme.gif)
+![](https://github.com/JosiaOrava/particleSimulation/blob/main/img/readme.gif)
 This is hobby project done by me to learn more on making particle physics.
 <br> It is made completely on Python and currently has particles for stone and sand. Stone will remain in place where you put it and sand falls and spreads.
 
