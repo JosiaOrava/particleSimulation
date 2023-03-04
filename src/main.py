@@ -23,28 +23,27 @@ class Particle:
     def randomSide(left,right):
         side = random.randint(0,1)
         if side == 0:
-            if left == False:
+            if not left:
                 return 2
-            elif right == False:
-                return 3
-            return 0
+            return 3 
         else:
-            if right == False:
+            if not right:
                 return 3
-            elif left == False:
-                return 2
-            return 0
+            return 2
+            
 
     def checkSides(self, x, y):
-        self.left, self.right = False, False
+        left, right = False, False
         for i in particles:
             # Check if left pixel under is empty
             if i.y == y + 1 and i.x == x - 1:
-                self.left = True
+                left = True
             # Check if right pixel under is empty
-            elif i.y == y + 1 and i.x == x + 1:
-                self.right = True
-        return Particle.randomSide(self.left, self.right)
+            if i.y == y + 1 and i.x == x + 1:
+                right = True
+        if left and right:
+            return 0
+        return Particle.randomSide(left, right)
         
     def checkColl(self, x,y):
         for particle in particles:
@@ -74,44 +73,49 @@ class Water(Particle):
     def randomSide(left,right,leftUnder,rightUnder):
         side = random.randint(0,1)
         if side == 0:
-            if left == False:
-                return 5
-            elif right == False:
-                return 4
-            elif leftUnder == False:
+            if not leftUnder:
                 return 2
-            elif rightUnder == False:
+            elif not rightUnder:
                 return 3
-            return 0
+            elif not left:
+                return 2
+            return 3
+            
         else:
-            if left == False:
-                return 5
-            elif right == False:
-                return 4
-            elif rightUnder == False:
+            if not rightUnder:
                 return 3
-            elif leftUnder == False:
+            elif not leftUnder:
                 return 2
-            return 0
+            elif not left:
+                return 2
+            return 3
+            
 
     def checkSides(self, x, y):
-        self.left, self.right, self.leftUnder, self.rightUnder = False, False, False, False
+        left, right, leftUnder, rightUnder = False, False, False, False
         for i in particles:
             # Check if left pixel under is empty
             if i.y == y + 1 and i.x == x - 1:
-                self.leftUnder = True
+                leftUnder = True
             # Check if right pixel under is empty
-            elif i.y == y + 1 and i.x == x + 1:
-                self.rightUnder = True
+            if i.y == y + 1 and i.x == x + 1:
+                rightUnder = True
             # Check if left pixel is empty 
-            elif i.y == y and i.x == x - 1:
-                print("left true")
-                self.left = True
+            if i.y == y and i.x == x - 1:
+                left = True
             # Check if right pixel is empty
-            elif i.y == y and i.x == x + 1:
-                print("right true")
-                self.right = True
-        return Water.randomSide(self.left, self.right, self.leftUnder, self.rightUnder)
+            if i.y == y and i.x == x + 1:
+                right = True
+        if leftUnder and left and rightUnder and right:
+            return 0
+        return Water.randomSide(left, right, leftUnder, rightUnder)
+
+    def checkColl(self, x,y):
+        for particle in particles:
+            # Check if pixel under is empty
+            if particle.y == y + 1 and particle.x == x:
+                return Water.checkSides(self,x,y)
+        return 1    
 
     def fall(self):
         if Water.checkColl(self, self.x, self.y) == 1 and self.y <= WIN_HEIGHT // RECT_SIZE - 2:
@@ -120,12 +124,7 @@ class Water(Particle):
             self.x = self.x - 1 
         if Water.checkColl(self, self.x, self.y) == 3 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
             self.x = self.x + 1
-        if Water.checkColl(self, self.x, self.y) == 4 and self.x >= 2:
-            print("left")
-            self.x = self.x - 1
-        if Water.checkColl(self, self.x, self.y) == 5 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
-            print("right")
-            self.x = self.x + 1   
+        
 
 
 
@@ -135,6 +134,7 @@ class Rock(Particle):
 def main():
     clock = pg.time.Clock()
     run = True
+    
     while run:
         clock.tick(FPS)
         print(round(clock.get_fps(), 2))
@@ -161,6 +161,10 @@ def main():
                 particle.fall()
         
         pg.display.update()
+    y = 0
+    for i in particles:
+        y += 1
+    print(y)
     pg.quit()
 
 
