@@ -11,6 +11,9 @@ This project has teached me to work with
 
 <br> I'm sure my way of doing things isn't the most optimal and once I have added few other particle materials I will work on optimizing.
 
+## Update
+Code now optimized litle bit. Now it checks if particle is surrounded before calling fall function. Not perfect still but nearly doubled the ammount of particles that can be now on screen without lag.
+
 ## Future features
 Next I am working on water element and after that fire and distruction.
-<br><br> After those I will work on optimizing this sense now it runs into problems when there are many particles because it runs every frame alot of calculations on each particle.
+<br><br> After those I will work on optimizing this sense now it runs into problems when there are over 1500 particles because it runs every frame alot of calculations on each particle.

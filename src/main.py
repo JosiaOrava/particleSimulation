@@ -10,7 +10,7 @@ ROCK = (128,132,135)
 WATER = (0, 255, 255)
 RECT_SIZE = 10
 
-particles = []
+
 class Particle:
     
     def __init__(self, tuple, type):
@@ -32,7 +32,7 @@ class Particle:
             return 2
             
 
-    def checkSides(self, x, y):
+    def checkSides(self, x, y, particles):
         left, right = False, False
         for i in particles:
             # Check if left pixel under is empty
@@ -45,21 +45,29 @@ class Particle:
             return 0
         return Particle.randomSide(left, right)
         
-    def checkColl(self, x,y):
+    def checkColl(self, x,y, particles):
         for particle in particles:
             # Check if pixel under is empty
             if particle.y == y + 1 and particle.x == x:
-                return Particle.checkSides(self,x,y)
+                return Particle.checkSides(self,x,y, particles)
         return 1
 
-    def fall(self):
-        if Particle.checkColl(self,self.x, self.y) == 1 and self.y <= WIN_HEIGHT // RECT_SIZE - 2:
+    def fall(self, particles):
+        if Particle.checkColl(self,self.x, self.y, particles) == 1 and self.y <= WIN_HEIGHT // RECT_SIZE - 2:
             self.y = self.y + 1
-        if Particle.checkColl(self, self.x, self.y) == 2 and self.x >= 2:
+        if Particle.checkColl(self, self.x, self.y, particles) == 2 and self.x >= 2:
             self.x = self.x - 1 
-        if Particle.checkColl(self, self.x, self.y) == 3 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
+        if Particle.checkColl(self, self.x, self.y, particles) == 3 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
             self.x = self.x + 1  
-              
+    
+    def checkPos(self, particles):
+        for i in particles:
+            if self.y + 1 == i.y and self.x == i.x:
+                for i in particles:
+                    if self.y == i.y and (self.x + 1 == i.x or self.x - 1 == i.x):
+                        return False
+                
+        return True 
             
         
 
@@ -91,7 +99,7 @@ class Water(Particle):
             return 3
             
 
-    def checkSides(self, x, y):
+    def checkSides(self, x, y, particles):
         left, right, leftUnder, rightUnder = False, False, False, False
         for i in particles:
             # Check if left pixel under is empty
@@ -110,19 +118,19 @@ class Water(Particle):
             return 0
         return Water.randomSide(left, right, leftUnder, rightUnder)
 
-    def checkColl(self, x,y):
+    def checkColl(self, x,y, particles):
         for particle in particles:
             # Check if pixel under is empty
             if particle.y == y + 1 and particle.x == x:
-                return Water.checkSides(self,x,y)
+                return Water.checkSides(self,x,y, particles)
         return 1    
 
-    def fall(self):
-        if Water.checkColl(self, self.x, self.y) == 1 and self.y <= WIN_HEIGHT // RECT_SIZE - 2:
+    def fall(self, particles):
+        if Water.checkColl(self, self.x, self.y, particles) == 1 and self.y <= WIN_HEIGHT // RECT_SIZE - 2:
             self.y = self.y + 1
-        if Water.checkColl(self, self.x, self.y) == 2 and self.x >= 2:
+        if Water.checkColl(self, self.x, self.y, particles) == 2 and self.x >= 2:
             self.x = self.x - 1 
-        if Water.checkColl(self, self.x, self.y) == 3 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
+        if Water.checkColl(self, self.x, self.y, particles) == 3 and self.x <= WIN_WIDTH // RECT_SIZE - 3:
             self.x = self.x + 1
         
 
@@ -134,7 +142,7 @@ class Rock(Particle):
 def main():
     clock = pg.time.Clock()
     run = True
-    
+    particles = []
     while run:
         clock.tick(FPS)
         print(round(clock.get_fps(), 2))
@@ -153,12 +161,13 @@ def main():
         for particle in particles:
             if particle.type == "sand":
                 pg.draw.rect(WIN, SAND, (particle.x*RECT_SIZE, particle.y*RECT_SIZE,RECT_SIZE,RECT_SIZE))
-                particle.fall()
+                if particle.checkPos(particles):
+                    particle.fall(particles)
             if particle.type == "rock":
                 pg.draw.rect(WIN, ROCK, (particle.x*RECT_SIZE, particle.y*RECT_SIZE,RECT_SIZE,RECT_SIZE))
             if particle.type == "water":
                 pg.draw.rect(WIN, WATER, (particle.x*RECT_SIZE, particle.y*RECT_SIZE,RECT_SIZE,RECT_SIZE))
-                particle.fall()
+                particle.fall(particles)
         
         pg.display.update()
     y = 0
